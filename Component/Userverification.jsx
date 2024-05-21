@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Login from './LoginScreen';
 
-const UserVerification = ({ navigation }) => {
+const UserVerification = (props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Verification</Text>
@@ -12,7 +12,7 @@ const UserVerification = ({ navigation }) => {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={()=>navigation.navigate(Login)} // Navigate back to Login screen
+        onPress={()=> props.navigation.navigate('Fifth')} // Navigate back to Login screen
       >
         <Text style={styles.buttonText}>Get Back To Login</Text>
       </TouchableOpacity>

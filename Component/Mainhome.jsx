@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import database from '@react-native-firebase/database';
 
-const SadapayLoginScreen = () => {
+const SadapayLoginScreen = (props) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [userPhoneNumbers, setUserPhoneNumbers] = useState([]);
 
@@ -54,8 +54,10 @@ const SadapayLoginScreen = () => {
     console.log('Continue button pressed');
     console.log('User input:', phoneNumber);
     if (userPhoneNumbers.includes(phoneNumber)) {
+      props.navigation.navigate('Fifth');
       console.log('Phone number found in the database');
     } else {
+      props.navigation.navigate('Second');
       console.log('Phone number not found in the database');
     }
   };

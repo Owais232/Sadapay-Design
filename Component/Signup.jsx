@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import database, { firebase } from '@react-native-firebase/database';
+import database from '@react-native-firebase/database';
 
-const Sign = ({ onSubmit }) => {
+const Sign = (props) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -19,7 +19,7 @@ const Sign = ({ onSubmit }) => {
     // Insert "-" after 4 digits and allow up to 11 digits
     let formattedPhoneNumber = '';
     for (let i = 0; i < formattedValue.length; i++) {
-      if (i === 4 ) {
+      if (i === 4) {
         formattedPhoneNumber += '-';
       }
       formattedPhoneNumber += formattedValue[i];
@@ -50,14 +50,20 @@ const Sign = ({ onSubmit }) => {
       return;
     }
 
-    onSubmit({ firstName, lastName, phoneNumber, pin });
-    database().ref('Users Data ').push({
-      Fname:firstName,
-      Lname:lastName,
-      Phone:phoneNumber,
-      Pin:pin
-    })
-    .then(()=>console.log('Data set'));
+    database()
+      .ref('Users Data ')
+      .push({
+        Fname: firstName,
+        Lname: lastName,
+        Phone: phoneNumber,
+        Pin: pin
+      })
+      .then(() => console.log('Data set'));
+
+      props.navigation.navigate('Third');
+
+    // Clear fields after submission
+    clearFields();
   };
 
   const clearFields = () => {
