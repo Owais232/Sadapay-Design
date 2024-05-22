@@ -4,39 +4,18 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import database from '@react-native-firebase/database';
 
-const Sign = (props) => {
+const Sign = ({ navigation, route }) => {
+  const { phoneNumber } = route.params;
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [showPin, setShowPin] = useState(false);
 
-  const handlePhoneNumberChange = (value) => {
-    // Ensure only numbers are entered
-    const formattedValue = value.replace(/[^0-9]/g, '');
-
-    // Insert "-" after 4 digits and allow up to 11 digits
-    let formattedPhoneNumber = '';
-    for (let i = 0; i < formattedValue.length; i++) {
-      if (i === 4) {
-        formattedPhoneNumber += '-';
-      }
-      formattedPhoneNumber += formattedValue[i];
-    }
-
-    setPhoneNumber(formattedPhoneNumber.substring(0, 12)); // Limit to 13 characters
-  };
-
   const handleSubmit = () => {
     // Validate form fields
-    if (!firstName || !lastName || !phoneNumber || !pin || !confirmPin) {
+    if (!firstName || !lastName || !pin || !confirmPin) {
       alert('Please fill in all fields');
-      return;
-    }
-
-    if (phoneNumber.replace(/-/g, '').length !== 11) {
-      alert('Please enter a valid phone number');
       return;
     }
 
@@ -56,11 +35,13 @@ const Sign = (props) => {
         Fname: firstName,
         Lname: lastName,
         Phone: phoneNumber,
-        Pin: pin
+        Pin: pin,
+        Status: 'Pending',
+        Balance: '50'
       })
       .then(() => console.log('Data set'));
 
-      props.navigation.navigate('Third');
+    navigation.navigate('Third');
 
     // Clear fields after submission
     clearFields();
@@ -69,7 +50,6 @@ const Sign = (props) => {
   const clearFields = () => {
     setFirstName('');
     setLastName('');
-    setPhoneNumber('');
     setPin('');
     setConfirmPin('');
   };
@@ -95,9 +75,8 @@ const Sign = (props) => {
             style={styles.input}
             placeholder="Phone Number"
             value={phoneNumber}
-            onChangeText={handlePhoneNumberChange}
+            editable={false} // Make phone number not editable
             keyboardType="phone-pad"
-            maxLength={13} // Allow up to 13 characters including hyphens
           />
           <View style={styles.pinContainer}>
             <TextInput
@@ -128,12 +107,13 @@ const Sign = (props) => {
           />
         </View>
         <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={clearFields}>
+            <Text style={styles.buttonText}>Clear</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Submit</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={clearFields}>
-            <Text style={styles.buttonText}>Clear</Text>
-          </TouchableOpacity>
+          
         </View>
       </View>
     </LinearGradient>
@@ -166,6 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 15,
+    color:'black'
   },
   pinContainer: {
     flexDirection: 'row',

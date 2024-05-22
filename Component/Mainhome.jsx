@@ -54,10 +54,10 @@ const SadapayLoginScreen = (props) => {
     console.log('Continue button pressed');
     console.log('User input:', phoneNumber);
     if (userPhoneNumbers.includes(phoneNumber)) {
-      props.navigation.navigate('Fifth');
+      props.navigation.navigate('Fifth',{phoneNumber});
       console.log('Phone number found in the database');
     } else {
-      props.navigation.navigate('Second');
+      props.navigation.navigate('Second',{phoneNumber});
       console.log('Phone number not found in the database');
     }
   };

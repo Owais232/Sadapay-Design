@@ -5,13 +5,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import database from '@react-native-firebase/database';
 import Snackbar from 'react-native-snackbar';
 
-const Login = (props) => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+const Login = ({ route, navigation }) => {
+  const { phoneNumber } = route.params;
+  const [Number] = useState(phoneNumber); // Phone number is now not editable
   const [pin, setPin] = useState('');
   const [showPin, setShowPin] = useState(false);
 
   const handleLogin = () => {
-    if (!phoneNumber || !pin) {
+    if (!pin) {
       showSnackbar('Please fill in all fields');
       return;
     }
@@ -19,15 +20,19 @@ const Login = (props) => {
     database()
       .ref('Users Data ')
       .orderByChild('Phone')
-      .equalTo(phoneNumber)
+      .equalTo(Number)
       .once('value')
       .then(snapshot => {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           const user = Object.values(userData)[0]; // Assuming only one user per phone number
           if (user.Pin === pin) {
-            console.log('Login successful for user:', phoneNumber);
-            props.navigation.navigate('Fourth');
+            console.log('Login successful for user:', Number);
+            if (user.Status === 'Pending') {
+              navigation.navigate('Third');
+            } else if (user.Status === 'Approved') {
+              navigation.navigate('Fourth', { phoneNumber });
+            }
           } else {
             showSnackbar('Invalid PIN');
           }
@@ -41,22 +46,6 @@ const Login = (props) => {
       });
   };
 
-  const formatPhoneNumber = (input) => {
-    // Ensure only numbers are entered
-    const formattedValue = input.replace(/[^0-9]/g, '');
-
-    // Insert "-" after 4 digits and allow up to 11 digits
-    let formattedPhoneNumber = '';
-    for (let i = 0; i < formattedValue.length; i++) {
-      if (i === 4) {
-        formattedPhoneNumber += '-';
-      }
-      formattedPhoneNumber += formattedValue[i];
-    }
-
-    setPhoneNumber(formattedPhoneNumber.substring(0, 12)); // Limit to 12 characters
-  };
-
   const showSnackbar = (message) => {
     Snackbar.show({
       text: message,
@@ -67,15 +56,14 @@ const Login = (props) => {
   return (
     <LinearGradient colors={['#FF7B66', '#FFC3A0']} style={styles.gradient}>
       <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>Login here</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder="Phone Number"
             value={phoneNumber}
-            onChangeText={formatPhoneNumber}
+            editable={false} // Make phone number not editable
             keyboardType="phone-pad"
-            maxLength={12} // Allow up to 12 characters including hyphens
           />
           <View style={styles.pinContainer}>
             <TextInput
@@ -96,16 +84,9 @@ const Login = (props) => {
             />
           </View>
         </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => props.navigation.navigate('SignUp')}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
@@ -137,6 +118,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 15,
+    width: '100%',
+    color:'black'
   },
   pinContainer: {
     flexDirection: 'row',
@@ -152,17 +135,14 @@ const styles = StyleSheet.create({
     top: '50%',
     marginTop: -15,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: 10,
-  },
   button: {
     backgroundColor: 'white',
     borderRadius: 20,
     paddingVertical: 12,
     paddingHorizontal: 20,
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 20,
   },
   buttonText: {
     color: 'black',

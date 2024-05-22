@@ -8,6 +8,9 @@ import UserVerification from './Component/Userverification';
 import SadapayLoginScreen from './Component/Mainhome';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from '@react-navigation/native';
+import VirtualCardScreen from './Component/Cards';
+import SendMoneyScreen from './Component/Sendmoney';
+import AccountNumber from './Component/Accountnumber';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,7 +54,21 @@ const App = () => {
           component={SplitScreen}
           options={{ headerShown: false }}
         />
-        
+        <Stack.Screen
+          name="Sixth"
+          component={VirtualCardScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Seventh"
+          component={SendMoneyScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Eight"
+          component={AccountNumber}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

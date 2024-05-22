@@ -12,7 +12,7 @@ const UserVerification = (props) => {
       </Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={()=> props.navigation.navigate('Fifth')} // Navigate back to Login screen
+        onPress={()=> props.navigation.navigate('First')} // Navigate back to Login screen
       >
         <Text style={styles.buttonText}>Get Back To Login</Text>
       </TouchableOpacity>
