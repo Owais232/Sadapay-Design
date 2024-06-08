@@ -7,6 +7,7 @@ const SadapayLoginScreen = (props) => {
   const [userPhoneNumbers, setUserPhoneNumbers] = useState([]);
 
   useEffect(() => {
+    setPhoneNumber(''); // Clear phoneNumber when the component mounts
     fetchdata();
   }, []);
 
@@ -65,7 +66,7 @@ const SadapayLoginScreen = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <Text style={styles.title}>SADAPAY Login</Text>
+        <Text style={styles.title}>Enter Your Number</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}

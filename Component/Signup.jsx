@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import database from '@react-native-firebase/database';
 
@@ -55,9 +54,9 @@ const Sign = ({ navigation, route }) => {
   };
 
   return (
-    <LinearGradient colors={['#FF7B66', '#FFC3A0']} style={styles.gradient}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Sign Up</Text>
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <Text style={styles.title}>Sign Up Form</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -106,39 +105,46 @@ const Sign = ({ navigation, route }) => {
             maxLength={4}
           />
         </View>
-        <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={clearFields}>
-            <Text style={styles.buttonText}>Clear</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-          
-        </View>
       </View>
-    </LinearGradient>
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity style={[styles.button, styles.buttonLeft]} onPress={clearFields}>
+          <Text style={styles.buttonText}>Clear</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.buttonRight]} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#fff', // Set background color to white
     paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 20,
+  },
+  topContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 10,
   },
   title: {
-    fontSize: 40,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 40,
-    color: 'white', // Title text color
+    marginBottom: 20,
+    textAlign: 'center',
   },
   inputContainer: {
     width: '100%',
-    marginVertical: 20,
   },
   input: {
     borderRadius: 15,
@@ -146,12 +152,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    color:'black'
+    color: 'black',
+    borderWidth: 1,
+    borderColor: '#ccc', // Add border color for input fields
   },
   pinContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
+    width: '100%',
   },
   pinInput: {
     flex: 1,
@@ -162,22 +171,24 @@ const styles = StyleSheet.create({
     top: '50%',
     marginTop: -15,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: 10,
-  },
   button: {
-    backgroundColor: 'white',
-    borderRadius: 20,
+    flex: 1,
+    backgroundColor: '#FF7B66',
+    borderRadius: 10,
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  buttonLeft: {
+    marginRight: 5,
+  },
+  buttonRight: {
+    marginLeft: 5,
   },
   buttonText: {
-    color: 'black',
+    color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 18,
   },
 });
 

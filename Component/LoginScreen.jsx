@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import database from '@react-native-firebase/database';
 import Snackbar from 'react-native-snackbar';
@@ -54,9 +53,9 @@ const Login = ({ route, navigation }) => {
   };
 
   return (
-    <LinearGradient colors={['#FF7B66', '#FFC3A0']} style={styles.gradient}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Login here</Text>
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <Text style={styles.title}>Enter Your PIN</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -84,33 +83,40 @@ const Login = ({ route, navigation }) => {
             />
           </View>
         </View>
+      </View>
+      <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
+    paddingTop: 40,
+    paddingBottom: 20,
+    backgroundColor: '#fff', // Set background color to white
+  },
+  topContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  bottomContainer: {
+    justifyContent: 'flex-end',
   },
   title: {
-    fontSize: 40,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 40,
-    color: 'white', // Title text color
+    marginBottom: 20,
   },
   inputContainer: {
     width: '100%',
-    marginVertical: 20,
   },
   input: {
     borderRadius: 15,
@@ -119,12 +125,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     width: '100%',
-    color:'black'
+    color: 'black',
+    borderWidth: 1,
+    borderColor: '#ccc', // Add border color to match the design
   },
   pinContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
+    width: '100%',
   },
   pinInput: {
     flex: 1,
@@ -136,18 +145,18 @@ const styles = StyleSheet.create({
     marginTop: -15,
   },
   button: {
-    backgroundColor: 'white',
-    borderRadius: 20,
+    backgroundColor: '#FF7B66',
+    borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 20,
     width: '100%',
     alignItems: 'center',
-    marginTop: 20,
   },
   buttonText: {
-    color: 'black',
+    color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 18,
   },
 });
 
