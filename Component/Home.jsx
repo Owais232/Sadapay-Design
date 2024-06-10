@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList, BackHandler, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import database from '@react-native-firebase/database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SplitScreen = ({ route, navigation }) => {
   const { phoneNumber } = route.params;
   const [balance, setBalance] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [backPressCount, setBackPressCount] = useState(0);
 
   useEffect(() => {
     const userRef = database()
@@ -43,6 +45,36 @@ const SplitScreen = ({ route, navigation }) => {
     return () => {
       transactionRef.off('value', onTransactionChange);
     };
+  }, [phoneNumber]);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (backPressCount === 1) {
+        BackHandler.exitApp();
+      } else {
+        setBackPressCount(1);
+        ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+        setTimeout(() => setBackPressCount(0), 2000); // Reset back press count after 2 seconds
+        return true;
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [backPressCount]);
+
+  useEffect(() => {
+    // Save the current route when the component mounts
+    const saveCurrentScreen = async () => {
+      try {
+        await AsyncStorage.setItem('lastScreen', JSON.stringify({ screen: 'Fourth', phoneNumber }));
+      } catch (e) {
+        console.error('Failed to save the current screen.', e);
+      }
+    };
+
+    saveCurrentScreen();
   }, [phoneNumber]);
 
   const renderTransactionItem = ({ item }) => (

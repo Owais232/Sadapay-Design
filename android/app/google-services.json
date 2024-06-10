@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "957598805304",
-    "project_id": "sadapay-3e22e",
-    "storage_bucket": "sadapay-3e22e.appspot.com"
+    "project_number": "904922617701",
+    "project_id": "sadapaydata",
+    "storage_bucket": "sadapaydata.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:957598805304:android:b74d0421b13ef75359a5cd",
+        "mobilesdk_app_id": "1:904922617701:android:568695c6805cac3b68738c",
         "android_client_info": {
           "package_name": "com.awesomeproject"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDquZQaeeB_40CisRCdjfMMrZFk68WKHVM"
+          "current_key": "AIzaSyAi1pTAXN4CKtws4mS9c6CaaIjYDVSCCao"
         }
       ],
       "services": {

@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from 'react-native-splash-screen';
+import { StyleSheet } from 'react-native';
+
 import SplitScreen from './Component/Home';
 import Sign from './Component/Signup';
-import SplashScreen from 'react-native-splash-screen';
 import Login from './Component/LoginScreen';
 import UserVerification from './Component/Userverification';
 import SadapayLoginScreen from './Component/Mainhome';
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from '@react-navigation/native';
 import VirtualCardScreen from './Component/Cards';
 import SendMoneyScreen from './Component/Sendmoney';
 import AccountNumber from './Component/Accountnumber';
@@ -15,20 +17,29 @@ import AccountNumber from './Component/Accountnumber';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const [submitted, setSubmitted] = useState(false);
+  const [initialRoute, setInitialRoute] = useState('First');
 
   useEffect(() => {
-    SplashScreen.hide();
-  }, []);
+    const loadInitialRoute = async () => {
+      try {
+        const lastScreen = await AsyncStorage.getItem('lastScreen');
+        if (lastScreen) {
+          const { screen, phoneNumber } = JSON.parse(lastScreen);
+          setInitialRoute(screen);
+        }
+      } catch (e) {
+        console.error('Failed to load the initial route.', e);
+      } finally {
+        SplashScreen.hide();
+      }
+    };
 
-  const handleFormSubmit = () => {
-    setSubmitted(true);
-  };
+    loadInitialRoute();
+  }, []);
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-      
+      <Stack.Navigator initialRouteName={initialRoute}>
         <Stack.Screen
           name="First"
           component={SadapayLoginScreen}
@@ -74,11 +85,5 @@ const App = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-});
 
 export default App;
