@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
 
 const SadapayLoginScreen = (props) => {
@@ -12,18 +13,12 @@ const SadapayLoginScreen = (props) => {
   }, []);
 
   const handlePhoneNumberChange = (value) => {
-    // Ensure only numbers and hyphen are entered
     const formattedValue = value.replace(/[^0-9-]/g, '');
-  
-    // Ensure the length does not exceed 12 characters
     if (formattedValue.length <= 12) {
-      // Replace any existing hyphens
       const formattedPhoneNumber = formattedValue.replace(/-/g, '');
-  
-      // Insert "-" after 4 digits
       if (formattedPhoneNumber.length > 4) {
         const part1 = formattedPhoneNumber.slice(0, 4);
-        const part2 = formattedPhoneNumber.slice(4, 11); // Limit to 7 characters after hyphen
+        const part2 = formattedPhoneNumber.slice(4, 11);
         setPhoneNumber(`${part1}-${part2}`);
       } else {
         setPhoneNumber(formattedPhoneNumber);
@@ -50,15 +45,15 @@ const SadapayLoginScreen = (props) => {
       });
   };
 
-  const handleContinue = () => {
-    // Handle continue button press
+  const handleContinue = async () => {
     console.log('Continue button pressed');
     console.log('User input:', phoneNumber);
     if (userPhoneNumbers.includes(phoneNumber)) {
-      props.navigation.navigate('Fifth',{phoneNumber});
+      await AsyncStorage.setItem('lastScreen', JSON.stringify({ screen: 'Fifth', phoneNumber }));
+      props.navigation.navigate('Fifth', { phoneNumber });
       console.log('Phone number found in the database');
     } else {
-      props.navigation.navigate('Second',{phoneNumber});
+      props.navigation.navigate('Second', { phoneNumber });
       console.log('Phone number not found in the database');
     }
   };

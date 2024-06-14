@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import database from '@react-native-firebase/database'; // Import your database module
+import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons'; // Import the icon library
 
-const SendMoneyScreen = ({ route, navigation }) => {
+const SendMoneyScreen = ({ route }) => {
   const { phoneNumber } = route.params;
   const [balance, setBalance] = useState('');
   const [enteredAmount, setEnteredAmount] = useState('');
+  const navigation = useNavigation();
 
   useEffect(() => {
     // Fetch balance from the database based on the provided phone number
@@ -42,12 +45,15 @@ const SendMoneyScreen = ({ route, navigation }) => {
     } else if (amount > balance) {
       Alert.alert('Insufficient Balance', 'The entered amount exceeds the available balance.');
     } else {
-      navigation.navigate('Eight', { phoneNumber,amount});
+      navigation.navigate('Eight', { phoneNumber, amount });
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
       <Text style={styles.currentBalance}>Current balance</Text>
       <Text style={styles.balanceAmount}>{balance}</Text>
       <TextInput
@@ -73,6 +79,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    padding: 10,
+    borderRadius: 5,
   },
   currentBalance: {
     fontSize: 18,

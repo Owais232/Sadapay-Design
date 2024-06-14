@@ -30,13 +30,17 @@ const SplitScreen = ({ route, navigation }) => {
   }, [phoneNumber]);
 
   useEffect(() => {
-    const transactionRef = database().ref('Transaction History').orderByChild('senderPhoneNumber').equalTo(phoneNumber);
+    const transactionRef = database().ref('Transaction History');
 
     const onTransactionChange = transactionRef.on('value', (snapshot) => {
       if (snapshot.exists()) {
         const transactionsData = snapshot.val();
-        const transactionsList = Object.values(transactionsData);
-        setTransactions(transactionsList);
+        const transactionsList = Object.values(transactionsData).filter(
+          transaction =>
+            transaction.senderPhoneNumber === phoneNumber ||
+            transaction.receiverPhoneNumber === phoneNumber
+        );
+        setTransactions(transactionsList.reverse()); // Show latest transactions first
       } else {
         setTransactions([]);
       }
@@ -49,12 +53,19 @@ const SplitScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const backAction = () => {
-      if (backPressCount === 1) {
-        BackHandler.exitApp();
+      if (navigation.isFocused()) {
+        // If on home screen, handle back press count
+        if (backPressCount === 1) {
+          BackHandler.exitApp();
+        } else {
+          setBackPressCount(1);
+          ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+          setTimeout(() => setBackPressCount(0), 2000); // Reset back press count after 2 seconds
+          return true;
+        }
       } else {
-        setBackPressCount(1);
-        ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
-        setTimeout(() => setBackPressCount(0), 2000); // Reset back press count after 2 seconds
+        // If there's a previous screen, go back
+        navigation.goBack();
         return true;
       }
     };
@@ -62,7 +73,7 @@ const SplitScreen = ({ route, navigation }) => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
-  }, [backPressCount]);
+  }, [navigation, backPressCount]);
 
   useEffect(() => {
     // Save the current route when the component mounts
@@ -77,19 +88,38 @@ const SplitScreen = ({ route, navigation }) => {
     saveCurrentScreen();
   }, [phoneNumber]);
 
-  const renderTransactionItem = ({ item }) => (
-    <View style={styles.transaction}>
-      <Text style={{ fontSize: 20, fontStyle: 'italic', color: 'black' }}>{item.receiverName}</Text>
-      <Text style={{ fontSize: 20, fontStyle: 'italic', color: 'black' }}>Rs. {item.amount}</Text>
-    </View>
-  );
+  const renderTransactionItem = ({ item }) => {
+    const isSentTransaction = item.senderPhoneNumber === phoneNumber;
+    const transactionName = isSentTransaction ? item.receiverName : item.senderName;
+    const transactionAmount = isSentTransaction ? `- Rs. ${item.amount}` : `+ Rs. ${item.amount}`;
+
+    return (
+      <View style={styles.transactionContainer}>
+        <Icon
+          name={isSentTransaction ? "arrow-up" : "arrow-down"}
+          size={30}
+          color={isSentTransaction ? 'red' : 'blue'}
+          style={styles.transactionIcon}
+        />
+        <View style={styles.transactionDetails}>
+          <Text style={styles.transactionName}>
+            {transactionName || 'Transaction'}
+          </Text>
+          <Text style={styles.transactionTime}>{new Date(item.timestamp).toLocaleString()}</Text>
+        </View>
+        <Text style={[styles.transactionAmount, { color: isSentTransaction ? 'red' : 'green' }]}>
+          {transactionAmount}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.upperScreen}>
         <TouchableOpacity style={styles.upperleft} onPress={() => navigation.navigate('Sixth', { phoneNumber })}>
-          <Text style={{ color: 'white', fontSize: 19, marginLeft: 10, marginTop: 15 }}>Current Balance</Text>
-          <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 19, marginLeft: 10, marginTop: 5 }}>Rs. {balance}</Text>
+          <Text style={styles.upperText}>Current Balance</Text>
+          <Text style={styles.upperBalanceText}>{`Rs. ${balance}`}</Text>
           <View style={styles.cardandarrow}>
             <Icon name="credit-card" size={40} color="white" />
             <Icon name="arrow-right" size={40} color="white" />
@@ -100,27 +130,25 @@ const SplitScreen = ({ route, navigation }) => {
             <View style={{ margin: 10 }}>
               <Icon name="arrow-down" size={35} color="white" />
             </View>
-            <Text style={{ color: 'white', fontSize: 18, marginLeft: 10, paddingTop: 55 }}>Load</Text>
-            <Text style={{ color: 'white', fontSize: 18, marginLeft: 10, marginTop: 2 }}>Money</Text>
+            <Text style={styles.upperText}>Load</Text>
+            <Text style={styles.lowertext}>Money</Text>
           </View>
           <TouchableOpacity style={styles.sendrequest} onPress={() => navigation.navigate('Seventh', { phoneNumber })}>
             <View style={{ margin: 10 }}>
               <Icon name="arrow-up" size={35} color="white" />
             </View>
-            <Text style={{ color: 'white', fontSize: 18, marginLeft: 10, paddingTop: 55 }}>Send &</Text>
-            <Text style={{ color: 'white', fontSize: 18, marginLeft: 10, marginTop: 2 }}>Request</Text>
+            <Text style={styles.upperText}>Send &</Text>
+            <Text style={styles.lowertext}>Request</Text>
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.lowerScreen}>
-        <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'black', paddingLeft: 20, marginTop: 10 }}>Today</Text>
+        <Text style={styles.title}>Today</Text>
         <FlatList
           data={transactions}
           renderItem={renderTransactionItem}
           keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent={() => (
-            <View style={{ borderBottomWidth: 0.7, borderBottomColor: 'grey', marginLeft: 20, marginRight: 20 }} />
-          )}
+         
         />
       </View>
     </View>
@@ -138,10 +166,36 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: 'row',
   },
-  transaction: {
+  transactionContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    margin: 10,
+    alignItems: 'center',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  transactionIcon: {
+    marginRight: 20,
+  },
+  transactionDetails: {
+    flex: 1,
+    marginRight: 20,
+  },
+  transactionName: {
+    fontSize: 18,
+    color: 'black',
+    fontWeight: '500',
+  },
+  transactionTime: {
+    fontSize: 14,
+    color: 'grey',
+  },
+  transactionAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   container: {
     flex: 1,
@@ -162,6 +216,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 12,
   },
+  
   upperleft: {
     flex: 1.3,
     backgroundColor: '#01D2AF',
@@ -183,6 +238,38 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 30,
+  },
+  upperText: {
+    color: 'white',
+    fontSize: 19,
+    marginLeft: 10,
+    marginTop:20
+  },
+  lowertext:{
+    color: 'white',
+    fontSize: 19,
+    marginLeft: 10,
+
+  },
+  upperBalanceText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 19,
+    marginLeft: 10,
+    marginTop: 5,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'black',
+    paddingLeft: 20,
+    marginTop: 10,
+  },
+  separator: {
+    borderBottomWidth: 0.7,
+    borderBottomColor: 'grey',
+    marginLeft: 20,
+    marginRight: 20,
   },
 });
 

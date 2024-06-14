@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import database from '@react-native-firebase/database';
 
 const AccountNumber = ({ route, navigation }) => {
@@ -84,13 +84,13 @@ const AccountNumber = ({ route, navigation }) => {
 
   const handleContinue = () => {
     if (!userDetails) {
-      alert('No user found.');
+      Alert.alert('Error', 'No user found.');
       setEnteredPhoneNumber('');
       return;
     }
 
     if (enteredPhoneNumber === phoneNumber) {
-      alert('You cannot send money to your own account.');
+      Alert.alert('Error', 'You cannot send money to your own account.');
       return;
     }
 
@@ -142,6 +142,7 @@ const AccountNumber = ({ route, navigation }) => {
       .ref('Transaction History')
       .push({
         senderPhoneNumber: phoneNumber,
+        receiverPhoneNumber: enteredPhoneNumber,
         senderName: senderFullName,
         receiverName: receiverFullName,
         amount: parseFloat(amount),

@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from 'react-native-splash-screen';
-import { StyleSheet } from 'react-native';
 
 import SplitScreen from './Component/Home';
 import Sign from './Component/Signup';
@@ -84,6 +83,5 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
 
 export default App;
