@@ -27,6 +27,8 @@ const Login = ({ route, navigation }) => {
           const user = Object.values(userData)[0]; // Assuming only one user per phone number
           if (user.Pin === pin) {
             console.log('Login successful for user:', Number);
+
+            
             if (user.Status === 'Pending') {
               navigation.navigate('Third');
             } else if (user.Status === 'Approved') {

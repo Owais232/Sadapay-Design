@@ -14,6 +14,7 @@ const SendMoneyScreen = ({ route }) => {
     // Fetch balance from the database based on the provided phone number
     const fetchBalance = async () => {
       try {
+
         const snapshot = await database()
           .ref('Users Data ')
           .orderByChild('Phone')

@@ -14,6 +14,8 @@ const SplitScreen = ({ route, navigation }) => {
     const userRef = database()
       .ref('Users Data ')
       .orderByChild('Phone')
+
+      
       .equalTo(phoneNumber);
 
     const onValueChange = userRef.on('value', (snapshot) => {

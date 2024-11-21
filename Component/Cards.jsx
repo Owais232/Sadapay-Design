@@ -11,6 +11,8 @@ const CardScreen = ({ route, navigation }) => {
   const [isFrozen, setIsFrozen] = useState(false);
 
   useEffect(() => {
+
+    
     const cardRef = database()
       .ref('Users Data ')
       .orderByChild('Phone')
